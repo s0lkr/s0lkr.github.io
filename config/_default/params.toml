@@ -1,0 +1,52 @@
+# -- Theme Options --
+
+[main]
+  colorScheme = "emerald"      # Tenta o 'emerald' (verde hacker) ou 'ocean' (azul escuro)
+  defaultAppearance = "dark"
+  showParticles = true          # ATIVADO: As partículas
+  
+  # Estética e Funcionalidade
+  enableA11y = false
+  enableSearch = true
+  enableCodeCopy = true         # Essencial para quem lê seus relatórios copiar comandos
+  enableStyledScrollbar = true  # Scrollbar fininha e moderna
+  
+  # Imagens
+  disableImageOptimization = false
+  fingerprintAlgorithm = "sha512"
+
+[footer]
+  showMenu = false
+  showCopyright = true
+  showThemeAttribution = false  # Remove o "Powered by Hugo" para ser mais clean
+  showAppearanceSwitcher = false
+  showScrollToTop = true
+
+[homepage]
+  layout = "profile"            # Sua foto e bio no centro
+  showRecent = true             # Mostra os posts abaixo da bio
+  showRecentItems = 4           # Mantém a home organizada
+  showMoreLink = true
+  showMoreLinkDest = "/posts/"
+  cardView = true               # Posts em formato de cards modernos
+  layoutBackgroundBlur = true   # Suaviza o fundo para destacar o conteúdo
+
+[article]
+  showDate = true
+  showViews = true              # Mostra quantas pessoas viram o relatório
+  showReadingTime = true        # "3 min read"
+  showAuthor = false            # Já que é seu blog pessoal, não precisa repetir seu nome em cada post
+  showHero = true               # Mostra imagem de capa se você colocar uma
+  showTableOfContents = true    # Sumário lateral automático
+  showTaxonomies = true         # Tags (HTB, Linux, etc)
+  showWordCount = true
+  showZenMode = false           # Foca no minimalismo
+
+[list]
+  showSummary = true
+  showCards = true
+  groupByYear = true
+  cardView = true
+
+[sitemap]
+  excludedKinds = ["taxonomy", "term"]

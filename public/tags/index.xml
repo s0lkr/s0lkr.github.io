@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on root@s0lkr:~#</title>
+    <link>http://localhost:1313/tags/</link>
+    <description>Recent content in Tags on root@s0lkr:~#</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>© 2026 s0lkr</copyright>
+    <lastBuildDate>Wed, 28 May 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>C2</title>
+      <link>http://localhost:1313/tags/c2/</link>
+      <pubDate>Wed, 28 May 2025 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/tags/c2/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Hard</title>
+      <link>http://localhost:1313/tags/hard/</link>
+      <pubDate>Wed, 28 May 2025 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/tags/hard/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Havoc</title>
+      <link>http://localhost:1313/tags/havoc/</link>
+      <pubDate>Wed, 28 May 2025 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/tags/havoc/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Linux</title>
+      <link>http://localhost:1313/tags/linux/</link>
+      <pubDate>Wed, 28 May 2025 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/tags/linux/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Ssrf</title>
+      <link>http://localhost:1313/tags/ssrf/</link>
+      <pubDate>Wed, 28 May 2025 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/tags/ssrf/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Credencialdefault</title>
+      <link>http://localhost:1313/tags/credencialdefault/</link>
+      <pubDate>Tue, 03 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/tags/credencialdefault/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>IoT</title>
+      <link>http://localhost:1313/tags/iot/</link>
+      <pubDate>Tue, 03 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/tags/iot/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Mirai</title>
+      <link>http://localhost:1313/tags/mirai/</link>
+      <pubDate>Tue, 03 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/tags/mirai/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Pihole</title>
+      <link>http://localhost:1313/tags/pihole/</link>
+      <pubDate>Tue, 03 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/tags/pihole/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Raspberry</title>
+      <link>http://localhost:1313/tags/raspberry/</link>
+      <pubDate>Tue, 03 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/tags/raspberry/</guid>
+      <description></description>
+      
+    </item>
+    
+  </channel>
+</rss>

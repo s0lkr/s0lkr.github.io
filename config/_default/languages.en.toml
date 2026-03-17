@@ -1,0 +1,27 @@
+disabled = false
+languageCode = "en"
+languageName = "English"
+weight = 1
+title = "root@s0lkr:~#"
+
+[params]
+  displayName = "EN"
+  isoCode = "en"
+  rtl = false
+  dateFormat = "2 January 2006"
+  description = "Cybersecurity Analyst | Red Team Ops | Offensive Security"
+
+[params.author]
+  name = "s0lkr"
+  image = "author.jpg" # Certifique-se de colocar sua foto em /assets/author.jpg
+  headline = "red team ops | burned logs, not bridges"
+  bio = """Focused on Red Team operations and technical exploitation, I have executed over 13 pentest projects, including security assessments in government environments. My expertise includes web attacking and network intrusion, with a solid background in identifying and exploiting vulnerabilities across diverse infrastructures.
+
+On the defensive side, I manage the Microsoft security stack, specifically Defender, Intune, and Purview. My technical experience also covers vulnerability lifecycle management with Qualys, SAST/DAST triage using Sonar, and incident response focused on IOC investigation."""
+  
+  links = [
+    { github = "https://github.com/s0lkr" },
+    { linkedin = "https://www.linkedin.com/in/matheushfarias/" },
+    { x-twitter = "https://x.com/s0lkr" }, 
+    { medium = "https://medium.com/@s0lkr" },
+  ]

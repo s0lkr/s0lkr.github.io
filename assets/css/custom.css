@@ -1,0 +1,88 @@
+/* ============================================================
+   S0LKR - ULTIMATE RED TEAM THEME 
+   ============================================================ */
+
+/* 1. CORES BASE & FUNDO */
+:root {
+    --color-primary-500: 0, 255, 204 !important; /* Verde neon */
+    --color-primary-600: 0, 200, 150 !important;
+    --color-neutral-900: 10, 11, 16 !important;  /* Fundo escuro real */
+}
+
+body {
+    background-color: #0a0b10 !important;
+    color: #e0e0e0 !important;
+}
+
+/* 2. REMOÇÃO DO "S0LKR" TEIMOSO NO HEADER */
+/* Este seletor pega qualquer coisa no lado esquerdo do menu */
+.header .flex.items-center.justify-start,
+.header a[href="/"],
+.header .navbar-brand,
+.header .ms-2,
+.header span.font-bold {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+}
+
+/* 3. HEADER TOTALMENTE LIMPO */
+.header {
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 4. CARDS DE RELATÓRIO (Borda Neon & Hover) */
+.border-neutral-200, .dark .dark\:border-neutral-700 {
+    border-color: rgba(0, 255, 204, 0.2) !important;
+    background-color: rgba(10, 11, 16, 0.5) !important;
+    transition: all 0.3s ease;
+}
+
+.border-neutral-200:hover {
+    border-color: rgba(0, 255, 204, 0.8) !important;
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+    transform: translateY(-5px);
+}
+
+/* 5. TAGS NEON (HackTheBox, Linux, etc) */
+.badge {
+    background-color: transparent !important;
+    border: 1px solid rgba(0, 255, 204, 0.4) !important;
+    color: #00ffcc !important;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+}
+
+/* 6. BOTÃO "SHOW MORE" HACKER */
+.btn-primary, #show-more-button, .btn {
+    background-color: transparent !important;
+    border: 1px solid #00ffcc !important;
+    color: #00ffcc !important;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #00ffcc !important;
+    color: #0a0b10 !important;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+}
+
+/* 7. MOTOR DE PARTÍCULAS */
+#particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* 8. SCROLLBAR */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #0a0b10; }
+::-webkit-scrollbar-thumb { background: #00ffcc; border-radius: 10px; }
+
