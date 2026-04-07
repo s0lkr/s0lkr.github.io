@@ -63,6 +63,7 @@ With a token in hand, our first move is to map out the accessible projects. We a
 ```bash
 curl --header 'PRIVATE-TOKEN: glpat-WQNQTESTANDO' \
 '[http://10.8.20.80/api/v4/projects?owned=true](http://10.8.20.80/api/v4/projects?owned=true)' | jq '.[] | {name: .name, id: .id, visibility: .visibility}'
+```
 
 Focus on projects marked as PRIVATE to maximize the impact of the data exfiltration.
 
@@ -111,7 +112,7 @@ git commit -m "chore: update ci-cd maintenance script v1.1"
 git push
 The moment the push hits the server, GitLab triggers the runner. Since it's an internal self-hosted agent, it executes our socat command and hands us a shell directly from the internal LAN.
 
-Impact of Compromise
+# Impact of Compromise
 Once the runner is compromised, an operator can:
 
 Exfiltrate Secrets: Read environment variables and files stored on the runner host.
@@ -120,7 +121,7 @@ Establish Persistence: Add an SSH key to authorized_keys or install a persistent
 
 Bypass Controls: Disable SAST/DAST scanning stages to allow vulnerable code into production.
 
-Mitigation Strategies
+# Mitigation Strategies
 Securing a CI/CD environment requires more than just revoking a token.
 
 Secret Detection: Implement tools like Gitleaks or TruffleHog to scan commits in real-time and block secrets before they hit the server.

