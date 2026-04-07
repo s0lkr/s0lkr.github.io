@@ -14,7 +14,8 @@ draft: false
 HTB: Monteverde - Cracking Azure AD Sync
 ========================================
 
-**Target IP:** 10.10.10.172**Focus:** Active Directory, Password Spraying, Azure AD Connect Decryption
+**Target IP:** 10.10.10.172
+**Focus:** Active Directory, Password Spraying, Azure AD Connect Decryption
 
 This box is a great reminder that in a Windows environment, you don't always need a fancy web exploit to get in. Sometimes, the front door is open, and the keys to the kingdom are sitting in a config file.
 
