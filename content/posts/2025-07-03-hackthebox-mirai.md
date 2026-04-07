@@ -1,6 +1,6 @@
 ---
 title: "Mirai – Technical Report"
-date: 2017-10-03
+date: 2025-07-03
 description: "Analysis of the Mirai machine from HackTheBox."
 categories: ["HackTheBox"]
 tags: ["linux", "pihole", "credencialdefault", "raspberry", "IoT", "mirai"]
