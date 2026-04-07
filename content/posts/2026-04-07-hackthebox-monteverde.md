@@ -6,7 +6,7 @@ summary: "Azure AD Connect is a powerful tool, but in the hands of an attacker, 
 tags: ["Red Team", "Active Directory", "Azure AD", "HTB", "Privilege Escalation"]
 categories: ["Offensive Operations"]
 series: ["Active Directory Exploitation"]
-image: "featured.jpg"
+image: "/images/monteverde.png"
 showTableOfContents: true
 draft: false
 ---
